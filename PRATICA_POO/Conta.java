@@ -20,9 +20,6 @@ public class Conta {
 			return num;
 	}
 	
-	
-	//lista de extrato
-	
 	public Conta(String CPF, String nome, String senha) {
 		this.nome = nome;
 		this.CPF  =CPF;
