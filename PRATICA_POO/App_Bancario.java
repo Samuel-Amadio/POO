@@ -35,7 +35,7 @@ public class App_Bancario {
 	        conta.exibirAvisoSeguranca();
 	    }
 
-	    // ---------- DEPOSITAR ----------
+	    //DEPOSITAR 
 	    public void depositar(double valor) {
 
 	        if (contaLogada == null) {
@@ -48,7 +48,7 @@ public class App_Bancario {
 	        transacoesRealizadas++;
 	    }
 
-	    // ---------- TRANSFERIR ----------
+	    // TRANSFERIR 
 	    public void transferir(String contaDestino, double valor) {
 
 	        if (contaLogada == null) {
