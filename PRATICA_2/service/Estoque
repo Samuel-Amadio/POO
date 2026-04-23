@@ -1,0 +1,113 @@
+package service;
+
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Produto;
+
+public class Estoque {
+	
+	private HashMap<String, Produto> produtosMap;
+	private List<Produto> produtosList;
+	
+	Estoque(){
+		produtosMap = new HashMap<>();
+		produtosList = new ArrayList<>();
+	}
+	
+	public void cadastrarProduto(Produto produto) {
+		if(produtosMap.containsKey(produto.getCodigo())) {
+			System.out.println("\nErro: ja existe um produto com esse codigo");
+			return;
+		}
+		produtosMap.put(produto.getCodigo(), produto);
+		produtosList.add(produto);
+	}
+	
+	public Produto buscarProdutoporCodigo(String codigo) {
+		return produtosMap.get(codigo);
+	}
+	
+	public boolean removerProdutos(String codigo) {
+		Produto removido = produtosMap.remove(codigo);
+		
+		if(removido != null) {
+			produtosList.remove(removido);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean registrarEntrada(String codigo, int quantidade) {
+		Produto produto = produtosMap.get(codigo);
+	    
+	    if (produto == null || quantidade <= 0) {
+	        return false;
+	    }
+	    
+	    produto.setQuantidade(produto.getQuantidade() + quantidade);
+	    return true;
+	}
+	
+	public boolean registrarSaida(String codigo, int quantidade) {
+	    Produto produto = produtosMap.get(codigo);
+	    
+	    if (produto == null || quantidade <= 0) {
+	        return false;
+	    }
+	    
+	    if (produto.getQuantidade() < quantidade) {
+	        return false; 
+	    }
+	    
+	    produto.setQuantidade(produto.getQuantidade() - quantidade);
+	    return true;
+	}
+	
+	public boolean registrarSaida(String codigo, int quantidade) {
+	    Produto produto = produtosMap.get(codigo);
+	    
+	    if (produto == null || quantidade <= 0) {
+	        return false;
+	    }
+	    
+	    if (produto.getQuantidade() < quantidade) {
+	        return false; 
+	    }
+	    
+	    produto.setQuantidade(produto.getQuantidade() - quantidade);
+	    return true;
+	}
+	
+	public String gerarRelatorioGeral() {
+	    StringBuilder relatorio = new StringBuilder();
+	    
+	    for (Produto p : produtosList) {
+	        relatorio.append("Código: ").append(p.getCodigo())
+	                 .append(", Nome: ").append(p.getNome())
+	                 .append(", Quantidade: ").append(p.getQuantidade())
+	                 .append("\n");
+	    }
+	    
+	    return relatorio.toString();
+	}
+	
+	public List<Produto> listarProdutosComEstoqueBaixo(int limite) {
+	    List<Produto> baixos = new ArrayList<>();
+	    
+	    for (Produto p : produtosList) {
+	        if (p.getQuantidade() <= limite) {
+	            baixos.add(p);
+	        }
+	    }
+	    
+	    return baixos;
+	}
+	
+	public void listarProdutos() {
+		for(Produto p : produtosList) {
+			p.exibirDetalhes();
+		}
+	}
+}
