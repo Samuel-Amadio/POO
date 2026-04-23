@@ -1,0 +1,21 @@
+package util;
+
+import java.util.ArrayList;
+import java.util.List;
+import model.Produto;
+import service.Estoque;
+
+public class FormatadorRelatorio {
+	
+	public static String formatarProduto(Produto produto) {
+		return produto.exibirDetalhes();
+	}
+	
+	public static String formatarListaProdutos(List<Produto> produtos) {
+		
+	}
+	
+	public static String formatarRelatorioEstoque(List<Produto> produtos) {
+		
+	}
+}
