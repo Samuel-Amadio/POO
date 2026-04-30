@@ -1,5 +1,96 @@
 package ui;
 
-public class MenuConsole {
+import java.util.Scanner;
+import service.*;
+import model.*;
+import util.*;
 
+public class MenuConsole {
+	private Estoque estoque;
+	private Scanner scanner;
+	
+	
+	public MenuConsole(Estoque estoque){
+		this.estoque = estoque;
+		this.scanner = new Scanner(System.in);
+	}
+	
+	private void cadastrarProduto() {
+		System.out.println("\nTipo: 1. Alimenticio | 2. Eletronico | 3. Vestuario");
+		int tipo = scanner.nextInt(); scanner.nextLine();
+		System.out.println("\nNome: "); String nome = scanner.nextLine();
+		System.out.println("\nQuantidade inicial: "); int qtd = scanner.nextInt();
+		System.out.println("\nPreco:"); double preco = scanner.nextDouble(); scanner.nextLine();
+	
+		Produto p = null;
+		if(tipo==1) {
+			System.out.println("\nData de validade (dd/mm/aaaa):"); String dataValidade = scanner.nextLine();
+			p = new ProdutoAlimenticio(GeradorCodigo.gerarCodigo("ALI"), nome, qtd, preco, dataValidade);
+		}
+		else if(tipo==2) { 
+			System.out.println("\nVoltagem (ex: 10V):"); String voltagem = scanner.nextLine();
+			System.out.println("\nMeses de garantia:"); int garantiaMeses = scanner.nextInt();
+			p = new ProdutoEletronico(GeradorCodigo.gerarCodigo("ELE"), nome, qtd, preco, voltagem, garantiaMeses);
+		}
+		else if(tipo==3) {
+			System.out.println("\nMaterial:"); String material = scanner.nextLine();
+			System.out.println("\nTamanho:"); String tamanho = scanner.nextLine();
+			p = new ProdutoVestuario(GeradorCodigo.gerarCodigo("VES"), nome, qtd, preco, material, tamanho);
+		}
+		
+		if(p!= null) {
+			estoque.cadastrarProduto(p);
+			System.out.println("\nProduto cadastrado com sucesso");
+		}
+	}
+	
+	private void buscarProduto() {
+		System.out.println("\nDigite o codigo:");
+		String cod = scanner.nextLine();
+		Produto p = estoque.buscarProdutoporCodigo(cod);
+		System.out.println(p != null ? p.exibirDetalhes() : "Produto não encontrado");
+	}
+	
+	private void registrarEntrada() {
+		System.out.println("\nDigite o codigo:");String cod = scanner.nextLine();
+		System.out.println("\nQuantidade: "); int qtd = scanner.nextInt();
+		if(estoque.registrarEntrada(cod, qtd)) System.out.println("\nEntrada registrada");
+		else System.out.println("\nErro na entrada");
+		
+	}
+	
+	private void registrarSaida() {
+		System.out.println("\nCodigo:"); String cod = scanner.nextLine();
+		System.out.println("\nQuantidade:"); int qtd = scanner.nextInt();
+		if(estoque.registrarSaida(cod, qtd))System.out.println("\nSaida registrada");
+		else System.out.println("\nErro na saida (verifique a quantidade ou o código");
+		
+	}
+	
+	
+	
+	public void iniciar() {
+		int opcao;
+		do {
+			System.out.println("\n---MENU ESTOQUE---");
+			System.out.println("\n1.Cadastrar | 2. Listar produtos | 3. Buscar produtos |"
+					+ "4. Registrar entrada | 5. Registrar saída | 6. Exibir relatório | 0. Sair");
+			opcao = scanner.nextInt();
+			scanner.nextLine();
+			
+			switch (opcao) {
+			case 1 -> cadastrarProduto();
+			case 2 -> estoque.listarProdutos();
+			case 3 -> buscarProduto();
+			case 4 -> registrarEntrada();
+			case 5 -> registrarSaida();
+			case 6 -> System.out.println(estoque.gerarRelatorioGeral());
+				
+			}
+		}while(opcao!=0);
+	}
+	
+	
 }
+
+
