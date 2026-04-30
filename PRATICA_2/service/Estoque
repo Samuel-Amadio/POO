@@ -11,7 +11,7 @@ public class Estoque {
 	private HashMap<String, Produto> produtosMap;
 	private List<Produto> produtosList;
 	
-	Estoque(){
+	public Estoque(){
 		produtosMap = new HashMap<>();
 		produtosList = new ArrayList<>();
 	}
@@ -65,20 +65,6 @@ public class Estoque {
 	    return true;
 	}
 	
-	public boolean registrarSaida(String codigo, int quantidade) {
-	    Produto produto = produtosMap.get(codigo);
-	    
-	    if (produto == null || quantidade <= 0) {
-	        return false;
-	    }
-	    
-	    if (produto.getQuantidade() < quantidade) {
-	        return false; 
-	    }
-	    
-	    produto.setQuantidade(produto.getQuantidade() - quantidade);
-	    return true;
-	}
 	
 	public String gerarRelatorioGeral() {
 	    StringBuilder relatorio = new StringBuilder();
@@ -107,7 +93,7 @@ public class Estoque {
 	
 	public void listarProdutos() {
 		for(Produto p : produtosList) {
-			p.exibirDetalhes();
+			System.out.println(p.exibirDetalhes());
 		}
 	}
 }
