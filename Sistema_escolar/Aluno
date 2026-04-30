@@ -1,0 +1,94 @@
+package sistema_escolar;
+import java.util.*;
+
+
+public class Aluno extends Usuario{
+	//nome
+	//idade
+	//cpf
+	private String titulacao;
+	private ArrayList<Disciplina> disciplinas;
+	public String getNome() {
+		return nome;
+	}
+	
+	public Aluno(String nome, String matricula) {
+		this.nome = nome;
+		this.matricula = matricula;
+		disciplinas = new ArrayList<>();
+	}
+	
+	public ArrayList<Disciplina> getDisciplinas() {
+		return disciplinas;
+	}
+	public void setDisciplinas(ArrayList<Disciplina> disciplinas) {
+		this.disciplinas = disciplinas;
+	}
+	
+	
+	
+	public String getTitulacao() {
+		return titulacao;
+	}
+
+	public void setTitulacao(String titulacao) {
+		this.titulacao = titulacao;
+	}
+
+	public void realizarMatricula(Disciplina disciplina) {
+		if(disciplinas.size() >= 6) {
+			System.out.println("\nLimite de disciplinas atingido");
+			return;
+		}
+		disciplinas.add(disciplina);
+		disciplina.matricularAluno(this);
+		
+	}
+	
+	public void visualizarHistorico() {
+		for (Disciplina d : disciplinas) {
+			
+			double[] notas = d.getNotas(this);
+			
+			if(notas != null) {
+				System.out.println(d.getNome() + 
+						" ->" + notas[0] + "," + notas[1]);
+			}
+			
+		}
+	}
+	
+	 public void visualizarNotaDisciplina(int codigo) {
+
+	        for(Disciplina d : disciplinas) {
+	            if(d.getCodigo() == codigo) {
+
+	                double[] notas = d.getNotas(this);
+
+	                System.out.println("Notas: " + notas[0] + " , " + notas[1]);
+	            }
+	        }
+	    }
+	 
+	 @Override
+	 public double calculaSalario(double horas, double horasAula) {
+		if(titulacao.equalsIgnoreCase("Graduação")) {
+			System.out.println("\nNão possui direito a salario");
+			  return 0;
+		}
+		else if(titulacao.equalsIgnoreCase("Especialização")) {
+			return (horas*horasAula)*0.05;
+		}
+		else if(titulacao.equalsIgnoreCase("Mestrado")) {
+			return (horas*horasAula)*0.15;
+		}
+		else if(titulacao.equalsIgnoreCase("Doutorado")) {
+			return (horas*horasAula)*0.30;
+		}
+		 
+	 }
+	 
+	 
+	
+	
+}
