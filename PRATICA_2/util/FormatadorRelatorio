@@ -1,9 +1,8 @@
 package util;
 
-import java.util.ArrayList;
 import java.util.List;
+
 import model.Produto;
-import service.Estoque;
 
 public class FormatadorRelatorio {
 	
@@ -12,10 +11,16 @@ public class FormatadorRelatorio {
 	}
 	
 	public static String formatarListaProdutos(List<Produto> produtos) {
-		
+		StringBuilder sb = new StringBuilder("---Lista de produtos---");
+		for(Produto p: produtos) {
+			sb.append(formatarProduto(p)).append("\n");
+		}
+		return sb.toString();
 	}
 	
 	public static String formatarRelatorioEstoque(List<Produto> produtos) {
-		
+		return "\nRelatório Geral: \n" + formatarListaProdutos(produtos);
 	}
+	
+	
 }
