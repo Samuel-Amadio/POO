@@ -1,0 +1,31 @@
+package sistema_escolar;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Escola escola = new Escola();
+
+        Aluno a1 = new Aluno("Ana", "001");
+        Aluno a2 = new Aluno("Carlos", "002");
+
+        escola.matricularAluno(a1);
+        escola.matricularAluno(a2);
+
+        Professor p1 = new Professor("Marcos");
+
+        Disciplina d1 = new Disciplina("POO", p1, 101);
+
+        p1.adicionarDisciplina(d1);
+
+        a1.realizarMatricula(d1);
+        a2.realizarMatricula(d1);
+
+        p1.adicionarNota(a1, 8.5, 9.0, 101);
+        p1.adicionarNota(a2, 7.0, 6.5, 101);
+
+        a1.visualizarHistorico();
+
+        p1.visualizarNotasAlunos();
+    }
+}
