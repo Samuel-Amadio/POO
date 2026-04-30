@@ -48,7 +48,7 @@ public class App_Bancario {
 	        transacoesRealizadas++;
 	    }
 
-	    // TRANSFERIR 
+	    //TRANSFERIR 
 	    public void transferir(String contaDestino, double valor) {
 
 	        if (contaLogada == null) {
@@ -84,3 +84,4 @@ public class App_Bancario {
 	        System.out.println("Total de operações realizadas: " + transacoesRealizadas);
 	    }
 	}
+
