@@ -1,0 +1,19 @@
+package main;
+
+import ui.*;
+import service.*;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Estoque estoque = new Estoque();
+		
+		MenuConsole menu = new MenuConsole(estoque);
+		
+		menu.iniciar();
+		
+
+	}
+
+}
