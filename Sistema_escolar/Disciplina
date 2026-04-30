@@ -1,0 +1,94 @@
+package sistema_escolar;
+
+import java.util.HashMap;
+
+public class Disciplina {
+	
+	private String nome;
+	Professor professor;
+	private int codigo;
+	private int qtdAlunos;
+
+	HashMap<Aluno, double[]> alunos;
+	
+	 public Disciplina(String nome, Professor professor, int codigo) {
+
+	        this.nome = nome;
+	        this.professor = professor;
+	        this.codigo = codigo;
+
+	        alunos = new HashMap<>();
+	    }
+	
+	public String getNome() {
+		return nome;
+	}
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+	public Professor getProfessor() {
+		return professor;
+	}
+	public void setProfessor(Professor professor) {
+		this.professor = professor;
+	}
+	public int getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
+	}
+	public HashMap<Aluno, double[]> getAlunos() {
+		return alunos;
+	}
+	public void setAlunos(HashMap<Aluno, double[]> alunos) {
+		this.alunos = alunos;
+	}
+	public int getQtdAlunos() {
+		return qtdAlunos;
+	}
+
+	public void setQtdAlunos(int qtdAlunos) {
+		this.qtdAlunos = qtdAlunos;
+	}
+	
+	public void matricularAluno(Aluno aluno) {
+        alunos.put(aluno, new double[2]);
+    }
+
+    public void adicionarNota(Aluno aluno, double nota1, double nota2) {
+
+        if(alunos.containsKey(aluno)) {
+            alunos.put(aluno, new double[]{nota1, nota2});
+        }
+    }
+
+    public void verNotas() {
+
+        for(Aluno a : alunos.keySet()) {
+
+            double[] notas = alunos.get(a);
+
+            System.out.println(a.getNome() +
+                    " -> " + notas[0] + " , " + notas[1]);
+        }
+    }
+
+    public double calcularMedia(double nota1, double nota2) {
+        return (nota1 + nota2) / 2;
+    }
+
+    public String mostrarConceito(double media) {
+
+        if(media >= 9) return "A";
+        if(media >= 7) return "B";
+        if(media >= 5) return "C";
+        return "D";
+    }
+
+    public double[] getNotas(Aluno aluno) {
+        return alunos.get(aluno);
+    }
+	
+	
+}
