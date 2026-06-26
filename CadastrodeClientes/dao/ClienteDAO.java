@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import model.Cliente;
 
 public class ClienteDAO {
 	
-	public ClienteDAO() {
+	/*public ClienteDAO() {
         criarTabelaSeNaoExistir();
     }
 
@@ -31,8 +32,10 @@ public class ClienteDAO {
         } catch (Exception e) {
             System.err.println("Erro ao inicializar a tabela de clientes: " + e.getMessage());
         }
-    }
+    }*/
 	
+	
+	//-------------------------BLOCO 2 - QUESTÃO 1 ----------------------------------------------------
 	public void inserir(Cliente cliente) throws Exception {
 		String sql = "INSERT INTO clientes "
 				+ "(nome, telefone, email, sexo) VALUES (?,?,?,?)";	
@@ -119,6 +122,7 @@ public class ClienteDAO {
 		}
 	}
 	
+	//-------------------------BLOCO 5 - QUESTÃO 1 ----------------------------------------------------
 	public ArrayList<Cliente> buscaPorNome(String nome) throws SQLException{
 		String sql = "SELECT * FROM clientes WHERE nome LIKE ?" ;
 		ArrayList<Cliente> lista = new ArrayList<Cliente>();
@@ -140,6 +144,65 @@ public class ClienteDAO {
 		return lista;
 	}
 	
+	//-------------------------BLOCO 5 - QUESTÃO 3 ----------------------------------------------------
+	public ArrayList<Cliente> buscaporPeriodo(LocalDate dataInicial, LocalDate dataFinal) throws SQLException{
+		String sql = "SELECT * FROM clientes WHERE data_cadastro BETWEEN ? AND ?";
+		ArrayList<Cliente> lista = new ArrayList<>();
+		try (Connection conexao = Conexao.conectar();
+			PreparedStatement stmt = conexao.prepareStatement(sql)){
+			if(conexao == null) throw new SQLException("Não foi possível estabelecer conexão com o banco de dados");
+			
+			stmt.setString(1, dataInicial.toString());
+			stmt.setString(2, dataFinal.toString());
+			try(ResultSet resultSet = stmt.executeQuery()){
+				while(resultSet.next()) {
+					int id = resultSet.getInt("id");
+					String n = resultSet.getString("Nome");
+					String t = resultSet.getString("Telefone");
+					String e = resultSet.getString("Email");
+					String s = resultSet.getString("Sexo");
+					lista.add(new Cliente(id, n, t, e, s));
+				}
+			}
+			
+		}
+		
+		
+		
+		return lista;
+	}
+	
 	
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
