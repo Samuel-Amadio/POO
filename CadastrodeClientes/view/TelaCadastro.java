@@ -36,6 +36,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -43,8 +45,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import dao.ClienteDAO;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
-public class TelaCadastro extends JFrame {
+public class TelaCadastro extends JFrame implements Validacao{
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -56,11 +60,15 @@ public class TelaCadastro extends JFrame {
 	private ClienteTableModel modelo;
 	private ArrayList<Cliente> clientes;
 	private FileWriter fileWriter;
-	private Regex padronizador;
 	private BufferedWriter bufferedWriter;
 	private FileReader fileReader;
 	private BufferedReader bufferedReader;
 	private ClienteDAO dao;
+	private final DateTimeFormatter BR_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // [cite: 70]
+	
+	// Bloco 5 - Q2
+    private JTextField textDataInicial;
+    private JTextField textDataFinal;
 
 	/**
 	 * Launch the application.
@@ -85,7 +93,7 @@ public class TelaCadastro extends JFrame {
 		
 		dao = new ClienteDAO();
 		clientes = new ArrayList<Cliente>();
-		padronizador = new Regex();
+		
 		
 		clientes = DadosMockados.getDados();
 		try {
@@ -190,13 +198,13 @@ public class TelaCadastro extends JFrame {
 					JOptionPane.showMessageDialog(TelaCadastro.this, 
 							"Preencha todos os campos", "Alerta", 
 							JOptionPane.WARNING_MESSAGE);
-				}else if (!padronizador.RegexNome(nome)) {
+				}else if (!Regex.RegexNome(nome)) {
 					JOptionPane.showMessageDialog(TelaCadastro.this, "Preencha o nome apenas com letras, espaços e acentos!",
 							"Alerta", JOptionPane.WARNING_MESSAGE);
-				}else if(!padronizador.RegexEmail(email)) {
+				}else if(!Regex.RegexEmail(email)) {
 					JOptionPane.showMessageDialog(TelaCadastro.this, "Preencha o e-mail com um formato aceitavel!",
 							"Alerta", JOptionPane.WARNING_MESSAGE);
-				}else if (!padronizador.RegexTelefone(telefone)) {
+				}else if (!Regex.RegexTelefone(telefone)) {
 					JOptionPane.showMessageDialog(TelaCadastro.this, "Preencha o telefone com este formato: (00) 00000-0000",
 							"Alerta", JOptionPane.WARNING_MESSAGE);
 				}else {
@@ -266,6 +274,26 @@ public class TelaCadastro extends JFrame {
 		panel_1.add(textBuscar);
 		textBuscar.setColumns(10);
 		
+		//-------------------------BLOCO 5 - QUESTÃO 2  FILTRO DE DATAS----------------------------------------------------
+       /* JPanel panelFiltroData = new JPanel();
+        panelFiltroData.setBounds(23, 315, 690, 50);
+        contentPane.add(panelFiltroData);
+        panelFiltroData.setLayout(null);
+
+        panelFiltroData.add(new JLabel("Data Inicial:")).setBounds(12, 15, 90, 17);
+        textDataInicial = new JTextField();
+        textDataInicial.setBounds(100, 10, 110, 28);
+        panelFiltroData.add(textDataInicial);
+
+        panelFiltroData.add(new JLabel("Data Final:")).setBounds(230, 15, 80, 17);
+        textDataFinal = new JTextField();
+        textDataFinal.setBounds(310, 10, 110, 28);
+        panelFiltroData.add(textDataFinal);
+
+        JButton btnFiltrarData = new JButton("Filtrar por Data");
+        btnFiltrarData.setBounds(440, 9, 238, 30);
+        panelFiltroData.add(btnFiltrarData);*/
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(23, 395, 690, 196);
 		contentPane.add(scrollPane);
@@ -279,11 +307,11 @@ public class TelaCadastro extends JFrame {
 		menuBar.setBounds(0, 0, 737, 23);
 		contentPane.add(menuBar);
 		
-		JMenu mnNewMenu = new JMenu("Arquivo");
-		menuBar.add(mnNewMenu);
+		JMenu mnArquivo = new JMenu("Arquivo");
+		menuBar.add(mnArquivo);
 		
 		JMenuItem mntmAbrir = new JMenuItem("Abrir");
-		mnNewMenu.add(mntmAbrir);
+		mnArquivo.add(mntmAbrir);
 		mntmAbrir.addActionListener(new ActionListener() {
 			
 			@Override
@@ -300,7 +328,7 @@ public class TelaCadastro extends JFrame {
 		});
 		
 		JMenuItem mntmSalvar = new JMenuItem("Salvar");
-		mnNewMenu.add(mntmSalvar);
+		mnArquivo.add(mntmSalvar);
 		mntmSalvar.addActionListener(new ActionListener() {
 			
 			@Override
@@ -321,80 +349,109 @@ public class TelaCadastro extends JFrame {
 				System.exit(0);
 			}
 		});
-		mnNewMenu.add(mntmSair);
+		mnArquivo.add(mntmSair);
 		
 		
-		JMenu mnNewMenuEditar = new JMenu("Editar");
-		menuBar.add(mnNewMenuEditar);
+		JMenu mnEditar = new JMenu("Editar");
+		menuBar.add(mnEditar);
 		
 		JMenuItem mntmAtualizar = new JMenuItem("Atualizar");
-		mntmAtualizar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int linha = table.getSelectedRow();
-				if (linha < 0) {
-					JOptionPane.showMessageDialog(TelaCadastro.this, "Selecione um cliente para atualizar!", 
-							"Aviso", JOptionPane.WARNING_MESSAGE);
-					return;
-				}else {
-					Cliente cliente = modelo.getCliente(linha);
-					TelaAtualizar dialogo = new TelaAtualizar(TelaCadastro.this, cliente);
-					dialogo.setVisible(true);
-					if (dialogo.getClienteEditado() != null) {
-						try {
-							dao.atualizar(dialogo.getClienteEditado());
-						}catch(Exception e) {
-							JOptionPane.showMessageDialog(TelaCadastro.this, e.getMessage(),
-									"Alerta", JOptionPane.WARNING_MESSAGE);
-						}
-						try {
-							modelo.atualizarTabela(dao.listar());
-						}catch(Exception e) {
-							JOptionPane.showMessageDialog(TelaCadastro.this, e.getMessage(),
-									"Alerta", JOptionPane.WARNING_MESSAGE);
-						}
-					}
-				}
+	    mnEditar.add(mntmAtualizar);
+	    mntmAtualizar.addActionListener(arg0 -> {
+			try {
+				executarAtualizacao();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		});
-		mnNewMenuEditar.add(mntmAtualizar);
 		
 		JMenu mnFerramentas = new JMenu("Ferramentas");
 		menuBar.add(mnFerramentas);
-		
-		JMenuItem mtnmValidar = new JMenuItem("Validar dados");
-		JMenuItem mtnmExportar = new JMenuItem("Exportar relatório");
 		JMenuItem mtnmImpotar = new JMenuItem("Importar CSV validado");
+				//ADICIONAR AÇÃO AQUI
 		
-		mnFerramentas.add(mtnmValidar);
+		JMenuItem mntmValidarDados = new JMenuItem("Validar dados");
+		mnFerramentas.add(mntmValidarDados);
+		//ADICIONAR AÇÃO AQUI
+		
+		JMenuItem mtnmExportar = new JMenuItem("Exportar relatório");
+			//ADICIONAR AÇÃO AQUI
+
 		mnFerramentas.add(mtnmExportar);
 		mnFerramentas.add(mtnmImpotar);
 		
-		JMenu mnNewMenu_3 = new JMenu("Sobre");
-		menuBar.add(mnNewMenu_3);
+		JMenu mnSobre = new JMenu("Sobre");
+		menuBar.add(mnSobre);
 	}
 	
-	//BLOCO 4 - QUESTÃO 4
-	private boolean validarCliente(Cliente cliente) {
-		if (cliente.getNome().isBlank() || cliente.getEmail().isBlank() || cliente.getTelefone().isBlank() || cliente.getSexo().isBlank()) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Alerta", JOptionPane.WARNING_MESSAGE); 
-            return false;
-        }
-        if (!cliente.getNome().matches("^[A-Za-zÀ-ÿ\\s]+$")) { 
-            JOptionPane.showMessageDialog(this, "Nome inválido! O nome deve aceitar apenas letras, espaços e acentos.", "Erro de Validação", JOptionPane.ERROR_MESSAGE); 
-            return false;
-        }
-        if (!cliente.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) { 
-            JOptionPane.showMessageDialog(this, "E-mail inválido! Rejeitado e-mails sem arroba ou sem domínio.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        if (!cliente.getTelefone().matches("^\\(\\d{2}\\)\\s?\\d{4,5}-\\d{4}$")) { 
-            JOptionPane.showMessageDialog(this, "Telefone inválido! Formato esperado: (69) 99999-9999", "Erro de Validação", JOptionPane.ERROR_MESSAGE); 
-            return false;
-        }
-        return true;
+	      //-------------------------BLOCO 4 - QUESTÃO 4 ----------------------------------------------------
+
+	public boolean validarCliente(Cliente cliente) {
+		return validarCliente(
+		        cliente.getNome(), 
+		        cliente.getTelefone(), 
+		        cliente.getEmail(), 
+		        cliente.getSexo()
+		    );
 	}
+
+		      //-------------------------BLOCO 5 - QUESTÃO 4 ----------------------------------------------------
+	 private void executarFiltroPorData() {
+	        String iniStr = textDataInicial.getText().trim();
+	        String fimStr = textDataFinal.getText().trim();
+
+	        
+	        if (iniStr.isEmpty() || fimStr.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, "Informe as duas datas para realizar a consulta.", "Filtro", JOptionPane.WARNING_MESSAGE); 
+	            return;
+	        }
+
+	        try {
+	            LocalDate dataInicial = LocalDate.parse(iniStr, BR_FORMATTER);
+	            LocalDate dataFinal = LocalDate.parse(fimStr, BR_FORMATTER);
+
+	            if (dataInicial.isAfter(dataFinal)) {
+	                JOptionPane.showMessageDialog(this, "Data inicial não pode ser maior que a data final.", "Erro", JOptionPane.ERROR_MESSAGE); 
+	                return;
+	            }
+
+	          
+	            ArrayList<Cliente> listagemPeriodo = dao.buscaporPeriodo(dataInicial, dataFinal);
+	            modelo.atualizarTabela(listagemPeriodo); 
+
+	        } catch (DateTimeParseException ex) {
+	            JOptionPane.showMessageDialog(this, "Formato de data inválido. Utilize dd/MM/yyyy.", "Erro", JOptionPane.ERROR_MESSAGE); 
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	 
+	 
+	 private void executarAtualizacao() throws Exception {
+	        int linha = table.getSelectedRow();
+	      //-------------------------BLOCO 2 - QUESTÃO 4 ----------------------------------------------------
+	        if (linha < 0) {
+	            JOptionPane.showMessageDialog(TelaCadastro.this, "Selecione um cliente antes de continuar.", "Aviso", JOptionPane.WARNING_MESSAGE); // [cite: 53]
+	            return;
+	        }
+	        Cliente cliente = modelo.getCliente(linha);
+	        TelaAtualizar dialogo = new TelaAtualizar(TelaCadastro.this, cliente);
+	        dialogo.setVisible(true);
+	        
+	        if (dialogo.getClienteEditado() != null) {
+	            try {
+	                dao.atualizar(dialogo.getClienteEditado());
+	                modelo.atualizarTabela(dao.listar());
+	                JOptionPane.showMessageDialog(this, "Cliente atualizado com sucesso!");
+	            } catch (SQLException ex) {
+	               ex.printStackTrace();
+	            }
+	        }
+	    }
 	
-	//BLOCO 4 - QUESTÃO 4
+	
+	//-------------------------BLOCO 4 - QUESTÃO 4 ----------------------------------------------------
 	private void exportarReltorio(File arquivo) {
 		try {
 			ArrayList<Cliente> todos = dao.listar();
@@ -406,7 +463,7 @@ public class TelaCadastro extends JFrame {
 			
 			try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo)) ){
 				 writer.write("RELATÓRIO DE CLIENTES"); writer.newLine();
-				 writer.write("Data da geração:" + Cliente.formataData(LocalDate.now())); writer.newLine();
+				 writer.write("Data da geração:" + LocalDate.now().format(BR_FORMATTER)); writer.newLine();
 				 writer.write("Total de clientes: " + todos.size()); writer.newLine(); 
 	             writer.write("Masculino: " + masc); writer.newLine(); 
 	             writer.write("Feminino: " + fem); writer.newLine(); 
@@ -456,7 +513,7 @@ public class TelaCadastro extends JFrame {
 	          String email = campos[2].trim();
 	          String sexo = campos[3].trim();
 	          
-	          if(validarClienteSemModal(nome, telefone, email, sexo)) {
+	          if(validarCliente(nome, telefone, email, sexo)) {
 	        	  Cliente c = new Cliente(nome, telefone, email, sexo);
 	        	 
 	        	  try{
@@ -495,12 +552,7 @@ public class TelaCadastro extends JFrame {
 		 }
 	}
 	
-	private boolean validarClienteSemModal(String nome, String telefone, String email, String sexo) {
-		return !nome.isBlank() && !telefone.isBlank() && !email.isBlank() && !sexo.isBlank() 
-				&& padronizador.RegexNome(nome)
-				&& padronizador.RegexTelefone(telefone)
-				&& padronizador.RegexEmail(email);
-	}
+	
 	
 	private void salvarDados(File file, ClienteTableModel modelo) {
 		try {
@@ -568,8 +620,12 @@ public class TelaCadastro extends JFrame {
 		}		
 		
 	}
-		
+	
+
+}
+
 	
 	
 	
-		}
+	
+	
