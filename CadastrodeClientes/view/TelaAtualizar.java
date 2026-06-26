@@ -2,16 +2,13 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import model.Cliente;
-
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,7 +17,7 @@ import javax.swing.JRadioButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class TelaAtualizar extends JDialog {
+public class TelaAtualizar extends JDialog implements Validacao{
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -40,33 +37,28 @@ public class TelaAtualizar extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new GridLayout(4, 2, 5, 5));
-		{
+		
 			JLabel lblNewLabel = new JLabel("Nome");
 			contentPanel.add(lblNewLabel);
-		}
-		{
+		
 			textFieldNome = new JTextField();
 			contentPanel.add(textFieldNome);
 			textFieldNome.setColumns(10);
-		}
-		{
+		
 			JLabel lblNewLabel_1 = new JLabel("Telefone");
 			contentPanel.add(lblNewLabel_1);
-		}
-		{
+		
 			textFieldTelefone = new JTextField();
 			contentPanel.add(textFieldTelefone);
 			textFieldTelefone.setColumns(10);
-		}
-		{
+		
 			JLabel lblNewLabel_2 = new JLabel("Email");
 			contentPanel.add(lblNewLabel_2);
-		}
-		{
+		
 			textFieldEmail = new JTextField();
 			contentPanel.add(textFieldEmail);
 			textFieldEmail.setColumns(10);
-		}
+		
 		
 		rdbtnMasculino = new JRadioButton("Masculino");
 		contentPanel.add(rdbtnMasculino);	
@@ -125,7 +117,7 @@ public class TelaAtualizar extends JDialog {
         String email = textFieldEmail.getText().toString();
         String sexo = rdbtnMasculino.isSelected() ? "Masculino" : "Feminino";
 
-        if (nome.isBlank() || telefone.isBlank() || email.isBlank()) {
+        if (validarCliente(nome, telefone, email, sexo)) {
             JOptionPane.showMessageDialog(
                 this,
                 "Preencha todos os campos."
@@ -143,6 +135,7 @@ public class TelaAtualizar extends JDialog {
 
         dispose();
 	}
+	
 	
 	public Cliente getClienteEditado() {
 		return this.clienteEditado;
