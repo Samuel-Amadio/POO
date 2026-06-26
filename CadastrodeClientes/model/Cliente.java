@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class Cliente {
 	
@@ -11,18 +10,16 @@ public class Cliente {
 	private String sexo;	
 	private int id;
 	
-	//BLOCO 3 - QUESTÃO 1
-	private String dataCadastro;
+	//-------------------------BLOCO 3 - QUESTÃO 1 ----------------------------------------------------
+	private LocalDate dataCadastro;
 	
 	public Cliente(String nome, String telefone, String email, String sexo) {
 		this.nome = nome;
 		this.telefone = telefone;
 		this.email = email;
 		this.sexo = sexo;
-		//BLOCO 3 - QUESTÃO 1
-		LocalDate localdate = LocalDate.now();
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		this.dataCadastro = localdate.format(formato);
+		//-------------------------BLOCO 3 - QUESTÃO 1 ----------------------------------------------------
+		this.dataCadastro  = LocalDate.now();
 				
 	}
 	
@@ -32,24 +29,15 @@ public class Cliente {
 		this.email = email;
 		this.sexo = sexo;
 		this.id = id;
-		//BLOCO 3 - QUESTÃO 1
-		LocalDate localdate = LocalDate.now();
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		this.dataCadastro = localdate.format(formato);
-		
+		//-------------------------BLOCO 3 - QUESTÃO 1 ----------------------------------------------------
+		this.dataCadastro  = LocalDate.now();
 	}
 	
-	public static String formataData(LocalDate localdata) {
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		return localdata.format(formato);
-	}
-	
-	
-	public String getDataCadastro() {
+	public LocalDate getDataCadastro() {
 		return dataCadastro;
 	}
 
-	public void setDataCadastro(String dataCadastro) {
+	public void setDataCadastro(LocalDate dataCadastro) {
 		this.dataCadastro = dataCadastro;
 	}
 
